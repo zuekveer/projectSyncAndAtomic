@@ -65,9 +65,14 @@ func main() {
 		"Frank":	15.0,
 	})
 	m.Print()
+	fmt.Println()
+
+	var wg sync.WaitGroup
 
 	for i := 0; i < 5; i++ {
+		wg.Add(1) // добавляем по 1 на каждую горутину
 		go func() {
+			defer wg.Done() // вызываем Done, когда горутина закончит выполнение
 			for _, key := range m.GetKeys() {
 				time.Sleep(time.Millisecond * 10)
 				m.IncreaseValue(key, 1)
@@ -75,7 +80,7 @@ func main() {
 		}()
 	}
 
-	time.Sleep(time.Second)
+	wg.Wait() // ждем окончания работы всех горутин
 	fmt.Println()
 	m.Print()
 }
